@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -24,32 +26,31 @@ public class CompanyServiceImpl implements CompanyService {
     private MessageSource messageSource;
 
     @Override
-    public Page<CompanyDTO> findPaginatedCompanies(int pageNum, int pageSize) {
+    public Page<CompanyDTO> findPaginated(int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
         Page<Company> page = companyRepository.findAll(pageable);
         return page.map(companyMapper::mapToCompanyDTO);
     }
 
     @Override
-    public Page<CompanyDTO> findPaginatedCompaniesByName(String name, Pageable pageable) {
+    public Page<CompanyDTO> findPaginatedByName(String name, Pageable pageable) {
 
         Page<Company> page = companyRepository.findByNameContaining(name, pageable);
         return page.map(companyMapper::mapToCompanyDTO);
     }
 
     @Override
-    public CompanyDTO findCompanyById(Long id) {
+    public Optional<CompanyDTO> findById(UUID id) {
         try {
             Company company = companyRepository.findById(id).get();
-            return companyMapper.mapToCompanyDTO(company);
+            return Optional.ofNullable(companyMapper.mapToCompanyDTO(company));
         } catch (NoSuchElementException exception) {
             String message = messageSource.getMessage("entity.notfound", new Object[]{id}, Locale.getDefault());
             throw new CompanyNoSuchElementException(message, id);
         }
     }
 
-    @Override
-    public void saveCompany(CompanyDTO companyDTO) {
+    public void save(CompanyDTO companyDTO) {
         Company company = companyMapper.mapToCompany(companyDTO);
 
         companyRepository.save(company);
@@ -57,7 +58,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public void deleteCompanyById(Long id) {
+    public void deleteById(UUID id) {
         companyRepository.deleteById(id);
     }
 }
