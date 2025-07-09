@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.tmane.springbootmvcdemo.util.Constants.*;
 
@@ -23,7 +24,7 @@ public class CompanyController {
 
 
     public int retrieveLastPageNumber() {
-        Page<CompanyDTO> page = companyService.findPaginatedCompanies(PAGE_NUMBER, PAGE_SIZE);
+        Page<CompanyDTO> page = companyService.findPaginated(PAGE_NUMBER, PAGE_SIZE);
 
         return page.getTotalPages();
     }
@@ -42,9 +43,9 @@ public class CompanyController {
         Page<CompanyDTO> page;
 
         if (keyword != null && !keyword.trim().isEmpty() && !"null".equalsIgnoreCase(keyword)) {
-            page = companyService.findPaginatedCompaniesByName((keyword), PageRequest.of(pageNum - 1, PAGE_SIZE));
+            page = companyService.findPaginatedByName((keyword), PageRequest.of(pageNum - 1, PAGE_SIZE));
         } else {
-            page = companyService.findPaginatedCompanies(pageNum, PAGE_SIZE);
+            page = companyService.findPaginated(pageNum, PAGE_SIZE);
         }
 
         List<CompanyDTO> companyList = page.getContent();
@@ -59,8 +60,8 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}")
-    public String displayCompanyDetails(@PathVariable Long id, Model model) {
-        model.addAttribute("company", companyService.findCompanyById(id));
+    public String displayCompanyDetails(@PathVariable UUID id, Model model) {
+        model.addAttribute("company", companyService.findById(id));
 
         return VIEW_COMPANY_PAGE;
     }
@@ -78,16 +79,16 @@ public class CompanyController {
         if (companyDTO.getSector() == null || companyDTO.getSector().toString().isEmpty()) {
             companyDTO.setSector(Sector.DFAULT_SECTOR);
         }
-        companyService.saveCompany(companyDTO);
+        companyService.save(companyDTO);
 
         return "redirect:" + COMPANIES_REDIRECT + "/page/" + retrieveLastPageNumber();
     }
 
     @GetMapping("/{id}/edit")
-    public String displayEditCompanyForm(@PathVariable Long id, Model model,
+    public String displayEditCompanyForm(@PathVariable UUID id, Model model,
                                          @RequestParam(value = "keyword", required = false) String keyword,
                                          @RequestParam(value = "page", defaultValue = "1") int page) {
-        CompanyDTO companyDTO = companyService.findCompanyById(id);
+        CompanyDTO companyDTO = companyService.findById(id);
         model.addAttribute("company", companyDTO);
         model.addAttribute("sectors", Sector.values());
         model.addAttribute("page", page);
@@ -98,18 +99,18 @@ public class CompanyController {
 
     @PostMapping("/{id}/update")
     public String updateCompany(@ModelAttribute("company") CompanyDTO companyDTO,
-                                @PathVariable Long id,
+                                @PathVariable UUID id,
                                 @RequestParam(value = "keyword", required = false) String keyword,
                                 @RequestParam(defaultValue = "1") int page) {
-        companyService.saveCompany(companyDTO);
+        companyService.save(companyDTO);
 
         return "redirect:" + COMPANIES_REDIRECT + "/page/" + page + "?keyword=" + (keyword == null ? "" : keyword);
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteCompany(@PathVariable Long id,
+    public String deleteCompany(@PathVariable UUID id,
                                 @RequestParam(name = "page", defaultValue = "0") int page) {
-        companyService.deleteCompanyById(id);
+        companyService.deleteById(id);
 
         return "redirect:" + COMPANIES_REDIRECT + "?page=" + page;
     }

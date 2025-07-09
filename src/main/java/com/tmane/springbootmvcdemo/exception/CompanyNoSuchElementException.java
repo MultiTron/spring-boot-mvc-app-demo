@@ -1,15 +1,17 @@
 package com.tmane.springbootmvcdemo.exception;
 
 
-public class CompanyNoSuchElementException extends RuntimeException {
-    private final Long id;
+import lombok.Getter;
 
-    public CompanyNoSuchElementException(String message, Long id) {
+import java.util.UUID;
+
+@Getter
+public class CompanyNoSuchElementException extends RuntimeException {
+    private final UUID id;
+
+    public CompanyNoSuchElementException(String message, UUID id) {
         super(message);
         this.id = id;
     }
 
-    public Long getId() {
-        return id;
-    }
 }
