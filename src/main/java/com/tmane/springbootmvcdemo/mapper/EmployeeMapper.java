@@ -4,6 +4,7 @@ import com.tmane.springbootmvcdemo.dto.EmployeeDTO;
 import com.tmane.springbootmvcdemo.entity.Employee;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.Mapping;
 
 @Component
 public class EmployeeMapper{

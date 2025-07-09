@@ -8,14 +8,14 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface BaseService<T, ID> {
-    Page<T> findPaginated(int pageNum, int pageSize);
+public interface BaseService<ENT, DTO, ID> {
+    Page<DTO> findPaginated(int pageNum, int pageSize);
 
-    Page<T> findPaginatedByName(String name, Pageable pageable);
+    Page<DTO> findPaginatedByName(String name, Pageable pageable);
 
-    Optional<T> findById(ID id) throws CompanyNoSuchElementException;
+    Optional<DTO> findById(ID id) throws CompanyNoSuchElementException;
 
-    void save(T dto);
+    void save(DTO dto);
 
     void deleteById(ID id);
 }

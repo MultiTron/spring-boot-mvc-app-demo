@@ -21,29 +21,30 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
-    private CompanyRepository companyRepository;
-    private CompanyMapper companyMapper;
+    private CompanyRepository repository;
+    private CompanyMapper mapper;
     private MessageSource messageSource;
+
 
     @Override
     public Page<CompanyDTO> findPaginated(int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
-        Page<Company> page = companyRepository.findAll(pageable);
-        return page.map(companyMapper::mapToCompanyDTO);
+        Page<Company> page = repository.findAll(pageable);
+        return page.map(mapper::mapToCompanyDTO);
     }
 
     @Override
     public Page<CompanyDTO> findPaginatedByName(String name, Pageable pageable) {
 
-        Page<Company> page = companyRepository.findByNameContaining(name, pageable);
-        return page.map(companyMapper::mapToCompanyDTO);
+        Page<Company> page = repository.findByName(name, pageable);
+        return page.map(mapper::mapToCompanyDTO);
     }
 
     @Override
     public Optional<CompanyDTO> findById(UUID id) {
         try {
-            Company company = companyRepository.findById(id).get();
-            return Optional.ofNullable(companyMapper.mapToCompanyDTO(company));
+            Company company = repository.findById(id).get();
+            return Optional.ofNullable(mapper.mapToCompanyDTO(company));
         } catch (NoSuchElementException exception) {
             String message = messageSource.getMessage("entity.notfound", new Object[]{id}, Locale.getDefault());
             throw new CompanyNoSuchElementException(message, id);
@@ -51,14 +52,13 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     public void save(CompanyDTO companyDTO) {
-        Company company = companyMapper.mapToCompany(companyDTO);
+        Company company = mapper.mapToCompany(companyDTO);
 
-        companyRepository.save(company);
-        companyMapper.mapToCompanyDTO(company);
+        repository.save(company);
     }
 
     @Override
     public void deleteById(UUID id) {
-        companyRepository.deleteById(id);
+        repository.deleteById(id);
     }
 }
