@@ -1,7 +1,7 @@
 package com.tmane.springbootmvcdemo;
 
-import com.tmane.springbootmvcdemo.repository.CompanyRepository;
-import com.tmane.springbootmvcdemo.repository.Impl.CompanyRepositoryImpl;
+import com.tmane.springbootmvcdemo.entity.Ceo;
+import com.tmane.springbootmvcdemo.entity.Person;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public CompanyRepository companyRepository() {
-        return new CompanyRepositoryImpl();
+    public Person person() {
+        return new Ceo();
     }
 }
