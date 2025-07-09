@@ -88,7 +88,7 @@ public class CompanyController {
     public String displayEditCompanyForm(@PathVariable UUID id, Model model,
                                          @RequestParam(value = "keyword", required = false) String keyword,
                                          @RequestParam(value = "page", defaultValue = "1") int page) {
-        CompanyDTO companyDTO = companyService.findById(id);
+        CompanyDTO companyDTO = companyService.findById(id).get();
         model.addAttribute("company", companyDTO);
         model.addAttribute("sectors", Sector.values());
         model.addAttribute("page", page);
