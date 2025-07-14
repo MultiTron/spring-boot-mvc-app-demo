@@ -1,26 +1,26 @@
-package com.tmane.springbootmvcdemo.dto;
+package com.tmane.springbootmvcdemo.dto.companydto;
 
 import com.tmane.springbootmvcdemo.enums.Sector;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class CompanyDTO {
-    private UUID id;
+@NoArgsConstructor
+public class CreateCompanyDTO extends CompanyDTO {
     private String name;
     private String country;
-    private String CEO;
+    private UUID ceo;
     private LocalDate foundationDate;
-    private Long revenue;
-    @Enumerated(EnumType.STRING)
+    private BigDecimal revenue;
     private Sector sector;
 }
