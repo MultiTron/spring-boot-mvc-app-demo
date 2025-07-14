@@ -10,15 +10,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AppConfig {
 
-    @Bean
-    @Qualifier("ceo")
-    public Person getCeo() {
-        return new Ceo();
-    }
-
-    @Bean
-    @Qualifier("employee")
-    public Person getEmployee(){
-        return new Employee();
-    }
+//    @Bean
+//    @Qualifier("ceo")
+//    public Person getCeo() {
+//        return new Ceo();
+//    }
+//
+//    @Bean
+//    @Qualifier("employee")
+//    public Person getEmployee(){
+//        return new Employee();
+//    }
 }
