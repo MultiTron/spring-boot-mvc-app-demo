@@ -1,20 +1,18 @@
 package com.tmane.springbootmvcdemo.mapper;
 
-import com.tmane.springbootmvcdemo.dto.EmployeeDTO;
+import com.tmane.springbootmvcdemo.dto.employeedto.GetEmployeeDTO;
+import com.tmane.springbootmvcdemo.entity.Ceo;
 import com.tmane.springbootmvcdemo.entity.Employee;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.Mapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class EmployeeMapper{
-    ModelMapper modelMapper = new ModelMapper();
+@Mapper(componentModel = "spring")
+public interface EmployeeMapper {
 
-    public EmployeeDTO mapToEmployeeDTO(Employee employee) {
-        return modelMapper.map(employee, EmployeeDTO.class);
-    }
+    GetEmployeeDTO toDto(Employee employee);
 
-    public Employee mapToEmployee(EmployeeDTO employeeDTO) {
-        return modelMapper.map(employeeDTO, Employee.class);
-    }
+    Employee toEntity(GetEmployeeDTO getEmployeeDTO);
+
+    @Mapping(target = "employer", source = "ceo")
+    Employee toEntity(GetEmployeeDTO getEmployeeDTO, Ceo ceo);
 }

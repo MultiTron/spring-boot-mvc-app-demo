@@ -1,19 +1,18 @@
 package com.tmane.springbootmvcdemo.mapper;
 
-import com.tmane.springbootmvcdemo.dto.CeoDTO;
+import com.tmane.springbootmvcdemo.dto.ceodto.GetCeoDTO;
 import com.tmane.springbootmvcdemo.entity.Ceo;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import com.tmane.springbootmvcdemo.entity.Company;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class CeoMapper {
-    ModelMapper mapper = new ModelMapper();
+@Mapper(componentModel = "spring")
+public interface CeoMapper {
 
-    public CeoDTO mapToCeoDTO(Ceo ceo) {
-        return mapper.map(ceo, CeoDTO.class);
-    }
+    GetCeoDTO toDto(Ceo ceo);
 
-    public Ceo mapToCeo(CeoDTO ceoDTO) {
-        return mapper.map(ceoDTO, Ceo.class);
-    }
+    @Mapping(target = "company", source = "company")
+    GetCeoDTO toDto(Ceo ceo, Company company);
+
+    Ceo toEntity(GetCeoDTO getCeoDTO);
 }
