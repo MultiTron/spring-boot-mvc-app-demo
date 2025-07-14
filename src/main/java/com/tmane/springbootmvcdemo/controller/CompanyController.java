@@ -1,6 +1,6 @@
 package com.tmane.springbootmvcdemo.controller;
 
-import com.tmane.springbootmvcdemo.dto.CompanyDTO;
+import com.tmane.springbootmvcdemo.dto.companydto.GetCompanyDTO;
 import com.tmane.springbootmvcdemo.entity.Company;
 import com.tmane.springbootmvcdemo.enums.Sector;
 import com.tmane.springbootmvcdemo.service.CompanyService;
@@ -9,12 +9,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
 
-import static com.tmane.springbootmvcdemo.util.Constants.*;
+import static com.tmane.springbootmvcdemo.util.Constants.ADD_COMPANY_PAGE;
+import static com.tmane.springbootmvcdemo.util.Constants.COMPANIES_PAGE;
+import static com.tmane.springbootmvcdemo.util.Constants.COMPANIES_REDIRECT;
+import static com.tmane.springbootmvcdemo.util.Constants.EDIT_COMPANY_PAGE;
+import static com.tmane.springbootmvcdemo.util.Constants.PAGE_NUMBER;
+import static com.tmane.springbootmvcdemo.util.Constants.PAGE_SIZE;
+import static com.tmane.springbootmvcdemo.util.Constants.VIEW_COMPANY_PAGE;
 
 @AllArgsConstructor
 @Controller
@@ -24,7 +35,7 @@ public class CompanyController {
 
 
     public int retrieveLastPageNumber() {
-        Page<CompanyDTO> page = companyService.findPaginated(PAGE_NUMBER, PAGE_SIZE);
+        Page<GetCompanyDTO> page = companyService.findPaginated(PAGE_NUMBER, PAGE_SIZE);
 
         return page.getTotalPages();
     }
@@ -40,7 +51,7 @@ public class CompanyController {
                                             @PathVariable(value = "pageNum") int pageNum,
                                             @RequestParam(name = "keyword", required = false) String keyword) {
 
-        Page<CompanyDTO> page;
+        Page<GetCompanyDTO> page;
 
         if (keyword != null && !keyword.trim().isEmpty() && !"null".equalsIgnoreCase(keyword)) {
             page = companyService.findPaginatedByName((keyword), PageRequest.of(pageNum - 1, PAGE_SIZE));
@@ -48,7 +59,7 @@ public class CompanyController {
             page = companyService.findPaginated(pageNum, PAGE_SIZE);
         }
 
-        List<CompanyDTO> companyList = page.getContent();
+        List<GetCompanyDTO> companyList = page.getContent();
 
         model.addAttribute("currentPage", pageNum);
         model.addAttribute("totalPages", page.getTotalPages());
@@ -75,11 +86,11 @@ public class CompanyController {
     }
 
     @PostMapping
-    public String saveCompany(@ModelAttribute("company") CompanyDTO companyDTO) {
-        if (companyDTO.getSector() == null || companyDTO.getSector().toString().isEmpty()) {
-            companyDTO.setSector(Sector.DFAULT_SECTOR);
+    public String saveCompany(@ModelAttribute("company") GetCompanyDTO getCompanyDTO) {
+        if (getCompanyDTO.getSector() == null || getCompanyDTO.getSector().toString().isEmpty()) {
+            getCompanyDTO.setSector(Sector.DFAULT_SECTOR);
         }
-        companyService.save(companyDTO);
+        companyService.save(getCompanyDTO);
 
         return "redirect:" + COMPANIES_REDIRECT + "/page/" + retrieveLastPageNumber();
     }
@@ -88,8 +99,8 @@ public class CompanyController {
     public String displayEditCompanyForm(@PathVariable UUID id, Model model,
                                          @RequestParam(value = "keyword", required = false) String keyword,
                                          @RequestParam(value = "page", defaultValue = "1") int page) {
-        CompanyDTO companyDTO = companyService.findById(id).get();
-        model.addAttribute("company", companyDTO);
+        GetCompanyDTO getCompanyDTO = companyService.findById(id).get();
+        model.addAttribute("company", getCompanyDTO);
         model.addAttribute("sectors", Sector.values());
         model.addAttribute("page", page);
         model.addAttribute(("keyword"), keyword);
@@ -98,11 +109,11 @@ public class CompanyController {
     }
 
     @PostMapping("/{id}/update")
-    public String updateCompany(@ModelAttribute("company") CompanyDTO companyDTO,
+    public String updateCompany(@ModelAttribute("company") GetCompanyDTO getCompanyDTO,
                                 @PathVariable UUID id,
                                 @RequestParam(value = "keyword", required = false) String keyword,
                                 @RequestParam(defaultValue = "1") int page) {
-        companyService.save(companyDTO);
+        companyService.save(getCompanyDTO);
 
         return "redirect:" + COMPANIES_REDIRECT + "/page/" + page + "?keyword=" + (keyword == null ? "" : keyword);
     }
