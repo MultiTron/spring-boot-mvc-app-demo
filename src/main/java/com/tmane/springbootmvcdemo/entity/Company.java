@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -15,13 +16,14 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Company {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String name;
     private String country;
-    private String CEO;
+    @OneToOne(mappedBy = "company")
+    private Ceo ceo;
     private LocalDate foundationDate;
-    private Long revenue;
+    private BigDecimal revenue;
     @Enumerated(EnumType.STRING)
     private Sector sector;
 }

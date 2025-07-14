@@ -10,4 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface CompanyRepository extends BaseRepository<Company, UUID> {
+
+    Page<Company> findByName(String name, Pageable pageable);
 }
