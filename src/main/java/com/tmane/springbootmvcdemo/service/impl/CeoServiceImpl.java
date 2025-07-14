@@ -1,6 +1,6 @@
-package com.tmane.springbootmvcdemo.service.Impl;
+package com.tmane.springbootmvcdemo.service.impl;
 
-import com.tmane.springbootmvcdemo.dto.CeoDTO;
+import com.tmane.springbootmvcdemo.dto.ceodto.GetCeoDTO;
 import com.tmane.springbootmvcdemo.entity.Ceo;
 import com.tmane.springbootmvcdemo.exception.CompanyNoSuchElementException;
 import com.tmane.springbootmvcdemo.mapper.CeoMapper;
@@ -25,28 +25,28 @@ public class CeoServiceImpl implements CeoService {
     private CeoMapper mapper;
     private MessageSource messageSource;
 
-    public void getByCompany(){
+    public void getByCompany() {
 
     }
 
     @Override
-    public Page<CeoDTO> findPaginated(int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
+    public Page<GetCeoDTO> findPaginated(int pageNum, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
         Page<Ceo> page = repository.findAll(pageable);
-        return page.map(mapper::mapToCeoDTO);
+        return page.map(mapper::toDto);
     }
 
     @Override
-    public Page<CeoDTO> findPaginatedByName(String name, Pageable pageable) {
-        Page<Ceo> page = repository.findByName(name, pageable);
-        return page.map(mapper::mapToCeoDTO);
+    public Page<GetCeoDTO> findPaginatedByName(String name, Pageable pageable) {
+        Page<Ceo> page = repository.findByFirstName(name, pageable);
+        return page.map(mapper::toDto);
     }
 
     @Override
-    public Optional<CeoDTO> findById(UUID id) throws CompanyNoSuchElementException {
+    public Optional<GetCeoDTO> findById(UUID id) throws CompanyNoSuchElementException {
         try {
             Ceo ceo = repository.findById(id).get();
-            return Optional.ofNullable(mapper.mapToCeoDTO(ceo));
+            return Optional.ofNullable(mapper.toDto(ceo));
         } catch (NoSuchElementException exception) {
             String message = messageSource.getMessage("entity.notfound", new Object[]{id}, Locale.getDefault());
             throw new CompanyNoSuchElementException(message, id);
@@ -54,8 +54,8 @@ public class CeoServiceImpl implements CeoService {
     }
 
     @Override
-    public void save(CeoDTO ceoDTO) {
-        Ceo ceo = mapper.mapToCeo(ceoDTO);
+    public void save(GetCeoDTO getCeoDTO) {
+        Ceo ceo = mapper.toEntity(getCeoDTO);
 
         repository.save(ceo);
     }

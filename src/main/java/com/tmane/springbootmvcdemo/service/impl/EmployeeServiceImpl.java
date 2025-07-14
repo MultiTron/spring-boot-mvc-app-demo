@@ -1,6 +1,6 @@
-package com.tmane.springbootmvcdemo.service.Impl;
+package com.tmane.springbootmvcdemo.service.impl;
 
-import com.tmane.springbootmvcdemo.dto.EmployeeDTO;
+import com.tmane.springbootmvcdemo.dto.employeedto.GetEmployeeDTO;
 import com.tmane.springbootmvcdemo.entity.Employee;
 import com.tmane.springbootmvcdemo.exception.CompanyNoSuchElementException;
 import com.tmane.springbootmvcdemo.mapper.EmployeeMapper;
@@ -27,23 +27,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public Page<EmployeeDTO> findPaginated(int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize);
+    public Page<GetEmployeeDTO> findPaginated(int pageNum, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
         Page<Employee> page = repository.findAll(pageable);
-        return page.map(mapper::mapToEmployeeDTO);
+        return page.map(mapper::toDto);
     }
 
     @Override
-    public Page<EmployeeDTO> findPaginatedByName(String name, Pageable pageable) {
-        Page<Employee> page = repository.findByName(name, pageable);
-        return page.map(mapper::mapToEmployeeDTO);
+    public Page<GetEmployeeDTO> findPaginatedByName(String name, Pageable pageable) {
+        Page<Employee> page = repository.findByFirstName(name, pageable);
+        return page.map(mapper::toDto);
     }
 
     @Override
-    public Optional<EmployeeDTO> findById(UUID id) throws CompanyNoSuchElementException {
+    public Optional<GetEmployeeDTO> findById(UUID id) throws CompanyNoSuchElementException {
         try {
             Employee employee = repository.findById(id).get();
-            return Optional.ofNullable(mapper.mapToEmployeeDTO(employee));
+            return Optional.ofNullable(mapper.toDto(employee));
         } catch (NoSuchElementException exception) {
             String message = messageSource.getMessage("entity.notfound", new Object[]{id}, Locale.getDefault());
             throw new CompanyNoSuchElementException(message, id);
@@ -51,8 +51,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void save(EmployeeDTO employeeDTO) {
-        Employee employee = mapper.mapToEmployee(employeeDTO);
+    public void save(GetEmployeeDTO getEmployeeDTO) {
+        Employee employee = mapper.toEntity(getEmployeeDTO);
 
         repository.save(employee);
     }

@@ -1,6 +1,6 @@
 package com.tmane.springbootmvcdemo.service;
 
-import com.tmane.springbootmvcdemo.dto.CeoDTO;
+import com.tmane.springbootmvcdemo.dto.ceodto.CeoDTO;
 import com.tmane.springbootmvcdemo.entity.Ceo;
 
 import java.util.UUID;

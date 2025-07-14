@@ -1,19 +1,18 @@
 package com.tmane.springbootmvcdemo.service;
 
-import com.tmane.springbootmvcdemo.dto.CompanyDTO;
-import com.tmane.springbootmvcdemo.exception.CompanyNoSuchElementException;
+import com.tmane.springbootmvcdemo.dto.BaseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.UUID;
 
-public interface BaseService<ENT, DTO, ID> {
+public interface BaseService<ENT, DTO extends BaseDTO, ID> {
     Page<DTO> findPaginated(int pageNum, int pageSize);
 
     Page<DTO> findPaginatedByName(String name, Pageable pageable);
 
-    Optional<DTO> findById(ID id) throws CompanyNoSuchElementException;
+    Optional<DTO> findById(ID id) throws NoSuchElementException;
 
     void save(DTO dto);
 

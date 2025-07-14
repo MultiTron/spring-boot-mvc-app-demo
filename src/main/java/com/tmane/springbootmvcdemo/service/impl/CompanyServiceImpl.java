@@ -1,9 +1,14 @@
-package com.tmane.springbootmvcdemo.service.Impl;
+package com.tmane.springbootmvcdemo.service.impl;
 
-import com.tmane.springbootmvcdemo.dto.CompanyDTO;
+import com.tmane.springbootmvcdemo.dto.companydto.CompanyDTO;
+import com.tmane.springbootmvcdemo.dto.companydto.CreateCompanyDTO;
+import com.tmane.springbootmvcdemo.dto.companydto.GetCompanyDTO;
+import com.tmane.springbootmvcdemo.entity.Ceo;
 import com.tmane.springbootmvcdemo.entity.Company;
+import com.tmane.springbootmvcdemo.exception.CeoNoSuchElementException;
 import com.tmane.springbootmvcdemo.exception.CompanyNoSuchElementException;
 import com.tmane.springbootmvcdemo.mapper.CompanyMapper;
+import com.tmane.springbootmvcdemo.repository.CeoRepository;
 import com.tmane.springbootmvcdemo.repository.CompanyRepository;
 import com.tmane.springbootmvcdemo.service.CompanyService;
 import lombok.AllArgsConstructor;
@@ -22,37 +27,52 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
     private CompanyRepository repository;
+    private CeoRepository ceoRepository;
     private CompanyMapper mapper;
     private MessageSource messageSource;
 
 
     @Override
-    public Page<CompanyDTO> findPaginated(int pageNum, int pageSize) {
+    public Page<GetCompanyDTO> findPaginated(int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
         Page<Company> page = repository.findAll(pageable);
-        return page.map(mapper::mapToCompanyDTO);
+        return page.map(mapper::toDto);
     }
 
     @Override
-    public Page<CompanyDTO> findPaginatedByName(String name, Pageable pageable) {
+    public Page<GetCompanyDTO> findPaginatedByName(String name, Pageable pageable) {
 
         Page<Company> page = repository.findByName(name, pageable);
-        return page.map(mapper::mapToCompanyDTO);
+        return page.map(mapper::toDto);
     }
 
     @Override
-    public Optional<CompanyDTO> findById(UUID id) {
+    public Optional<GetCompanyDTO> findById(UUID id) {
         try {
             Company company = repository.findById(id).get();
-            return Optional.ofNullable(mapper.mapToCompanyDTO(company));
+            return Optional.ofNullable(mapper.toDto(company));
         } catch (NoSuchElementException exception) {
             String message = messageSource.getMessage("entity.notfound", new Object[]{id}, Locale.getDefault());
             throw new CompanyNoSuchElementException(message, id);
         }
     }
 
-    public void save(CompanyDTO companyDTO) {
-        Company company = mapper.mapToCompany(companyDTO);
+    @Override
+    public void save(CompanyDTO dto) {
+
+    }
+
+    public void save(CreateCompanyDTO companyDTO) {
+        UUID ceoId = companyDTO.getCeo();
+        Optional<Ceo> ceo = ceoRepository.findById(ceoId);
+        Company company;
+        if (ceo.isPresent()) {
+            company = mapper.toEntity(companyDTO, ceo.get());
+        } else {
+            String message = messageSource.getMessage("entity.notfound", new Object[]{ceoId}, Locale.getDefault());
+            throw new CeoNoSuchElementException(message, ceoId);
+        }
+
 
         repository.save(company);
     }
